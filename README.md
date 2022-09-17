@@ -5,13 +5,13 @@ Build as multiple producer, single consumer queue. Several queues can be created
 
 ## Available REST interfaces
 
-* /v1/create
+* GET /v1/create
   Create a key pair for reading and writing to the other interfaces.
-* /v1/post/{write_key}
+* POST /v1/post/{write_key}
   Send message via http body to the consumer.
-* /v1/ws/{write_key}
+* WS /v1/ws/{write_key}
   Send message via websocket to the consumer.
-* /v1/ws/{read_key}
+* WS /v1/ws/{read_key}
   Retrieve messages via websocket, only the last opened websocket for this read_key will retrieve the messages.
 
 ## Launching
