@@ -1,2 +1,2 @@
 # neosvr-simple-networking
-Rust Server for simple communication in NeosVR
+Rust WebSocket Server for simple communication in NeosVR
