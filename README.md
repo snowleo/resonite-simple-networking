@@ -1,5 +1,5 @@
-# neosvr-simple-networking
-Rust WebSocket Server for simple communication in NeosVR
+# resonite-simple-networking
+Rust WebSocket Server for simple communication in Resonite
 
 Build as multiple producer, single consumer queue. Several queues can be created via the create api. The server does not store any data, it only forwards it to the websocket consumers.
 
@@ -20,11 +20,11 @@ Expected to run as a systemd process. Example:
 
 ```
 [Unit]
-Description=neosvr-simple-networking daemon
+Description=resonite-simple-networking daemon
 After=syslog.target network.target
 
 [Service]
-ExecStart=/path/to/neosvr-simple-networking
+ExecStart=/path/to/resonite-simple-networking
 KillMode=process
 Restart=on-failure
 RestartSec=42s
@@ -33,7 +33,7 @@ PassEnvironment=RUST_LOG
 Environment=RUST_LOG=info
 LoadCredential=TLS_KEY:/etc/letsencrypt/live/domain/privkey.pem
 LoadCredential=TLS_CERT:/etc/letsencrypt/live/domain/fullchain.pem
-LoadCredential=ENCRYPTION_KEY:/etc/neos.key
+LoadCredential=ENCRYPTION_KEY:/etc/resonite.key
 
 [Install]
 WantedBy=multi-user.target

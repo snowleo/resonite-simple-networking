@@ -1,8 +1,9 @@
 use std::{env, fs};
 use std::path::{Path, PathBuf};
 use aes_gcm::{Aes128Gcm, Nonce, aead::{Aead, OsRng, rand_core::RngCore, KeyInit}, AeadCore, KeySizeUser};
+use base64::Engine;
 use log::{info, warn};
-use base64::{URL_SAFE, URL_SAFE_NO_PAD};
+use base64::engine::general_purpose::{URL_SAFE, URL_SAFE_NO_PAD};
 use crate::access::{AccessCheck, UserId};
 
 pub type Cipher = Aes128Gcm;
@@ -26,11 +27,12 @@ fn id_to_encrypted_string(cipher: &Cipher, user_id: UserId) -> Result<String, wa
         warn!("Unable to encrypt bytes {:?} {}", bytes, e);
         warp::reject()
     })?;
-    return Ok(base64::encode_config([nonce.to_vec(), result].concat(), URL_SAFE_NO_PAD));
+
+    return Ok( URL_SAFE_NO_PAD.encode([nonce.to_vec(), result].concat()));
 }
 
 pub fn decrypt_id(user_id: String, key: Key) -> Result<UserId, warp::Rejection> {
-    let data = base64::decode_config(&user_id, URL_SAFE_NO_PAD).map_err(|_| {
+    let data = URL_SAFE_NO_PAD.decode(&user_id).map_err(|_| {
         warn!("Unable to base64 decode {:?}", user_id);
         warp::reject()
     })?;
@@ -57,7 +59,7 @@ pub fn load_or_create_key() -> Key {
 
 fn create_key() -> Key {
     let key = Cipher::generate_key(&mut OsRng);
-    info!("Created encryption key: {}", base64::encode_config(&key, URL_SAFE));
+    info!("Created encryption key: {}", URL_SAFE.encode(&key));
     key
 }
 
@@ -66,7 +68,7 @@ fn load_key_from_disk() -> Option<Key> {
         .and_then(|dir| {
         fs::read_to_string(Path::new(dir.as_str()).join("ENCRYPTION_KEY")).ok()
     }).and_then(|var| {
-        base64::decode_config(var.trim(), URL_SAFE).ok()
+        URL_SAFE.decode(var.trim()).ok()
     }).and_then(|k| {
         if k.len() >= Cipher::key_size() {
             Some(Key::clone_from_slice(&k[0..Aes128Gcm::key_size()]))
